@@ -74,6 +74,31 @@ void testApp::setup() {
 	//recognition
 	b_recognition_color_over= false;
 	b_recognition_press_enable= false;
+    //sposta il first_min
+    b_first_min_color_over= false;
+    b_first_min_press_enable= false;
+    //sposta il second_min
+    b_second_min_color_over= false;
+    b_second_min_press_enable= false;
+
+    //freccie direzionali
+    b_arrow_up_color_over= false;
+    b_arrow_up_press_enable= false;
+
+    b_arrow_down_color_over= false;
+    b_arrow_down_press_enable= false;
+
+    b_arrow_right_color_over= false;
+    b_arrow_right_press_enable= false;
+
+    b_arrow_left_color_over= false;
+    b_arrow_left_press_enable= false;
+
+    b_arrow_in_color_over= false;
+    b_arrow_in_press_enable= false;
+
+    b_arrow_out_color_over= false;
+    b_arrow_out_press_enable= false;
     //----------------------------------------
 
     b_stop_update= false;
@@ -86,12 +111,16 @@ void testApp::setup() {
 
 	b_esayCam_enable= false;
 
-
-
+    b_arrow_color_first_min= false;
+    b_arrow_color_second_min= false;
+    b_move_first_min= false;
+    b_move_second_min= false;
 }
 
 //--------------------------------------------------------------
 void testApp::update() {
+
+    big_rect_v_b_r_x=  ofGetViewportWidth() - 250 - 5;
 
 	//ofBackground(100, 100, 100);
     ofBackgroundGradient(ofColor::white, ofColor::black, OF_GRADIENT_CIRCULAR);
@@ -101,7 +130,7 @@ void testApp::update() {
     if(!b_stop_update)
         kinect.update();
 
-    //rimuove dalla mesh tutti i vertici, colori e inidici
+    //rimuove dalla mesh tutti i vertici, colori e indici
     //da usare per evitare stackoverflow
     mesh.clear();
 
@@ -198,19 +227,26 @@ void testApp::drawInfo(){
 
 void testApp::drawRectangleMenu(){
 
+    //stringstream stream;
+
 	//big_rect_vertical
 	ofSetColor(big_rect_color_v);
 	ofNoFill();
 	ofRect(big_rect_v_x, big_rect_v_y, big_rect_v_w, big_rect_v_h);
 
-	//big_rect_vertical_buttons
+	//big_rect_vertical_buttons left
 	ofSetColor(big_rect_color_v);
 	ofNoFill();
-	ofRect(big_rect_v_b_x, big_rect_v_b_y, big_rect_v_b_w, big_rect_v_b_h);
+	ofRect(big_rect_v_b_l_x, big_rect_v_b_l_y, big_rect_v_b_w, big_rect_v_b_h);
+
+	//big_rect_vertical_buttons right
+	ofSetColor(big_rect_color_v);
+	ofNoFill();
+	ofRect(big_rect_v_b_r_x, big_rect_v_b_r_y, big_rect_v_b_w, big_rect_v_b_h);
 
     //rect_exit
-    rect_exit_x= big_rect_v_b_x  + 15;
-    rect_exit_y= big_rect_v_b_y + 10;
+    rect_exit_x= big_rect_v_b_l_x  + 15;
+    rect_exit_y= big_rect_v_b_l_y + 10;
     rect_exit_string_x= rect_exit_x + 15;
     rect_exit_string_y= rect_exit_y + 20;
     if(b_exit_color_over) ofSetColor(rect_color_over); else ofSetColor(rect_color);
@@ -226,6 +262,11 @@ void testApp::drawRectangleMenu(){
     ofRect(rect_pcl_x, rect_pcl_y, rect_w, rect_h);
     ofDrawBitmapString("PCL", rect_pcl_string_x, rect_pcl_string_y);
 
+    /*ofSetColor(ofColor::white);
+    stream << "regola tilt";
+    ofDrawBitmapString(stream.str(), rect_exit_x, rect_exit_y + rect_h + 20);
+    stream.clear();*/
+
     //rect angle up
     rect_a_up_x= rect_exit_x;
     rect_a_up_y= rect_exit_y + rect_h + 10;
@@ -233,7 +274,7 @@ void testApp::drawRectangleMenu(){
     rect_a_up_string_y= rect_a_up_y + 20;
     if(b_a_up_color_over) ofSetColor(rect_color_over); else ofSetColor(rect_color);
     ofRect(rect_a_up_x, rect_a_up_y, rect_w, rect_h);
-    ofDrawBitmapString("UP", rect_a_up_string_x, rect_a_up_string_y);
+    ofDrawBitmapString("TILT UP", rect_a_up_string_x, rect_a_up_string_y);
 
     //rect angle down
     rect_a_down_x= rect_pcl_x;
@@ -242,23 +283,14 @@ void testApp::drawRectangleMenu(){
     rect_a_down_string_y= rect_a_down_y + 20;
     if(b_a_down_color_over) ofSetColor(rect_color_over); else ofSetColor(rect_color);
     ofRect(rect_a_down_x, rect_a_down_y, rect_w, rect_h);
-    ofDrawBitmapString("DOWN", rect_a_down_string_x, rect_a_down_string_y);
+    ofDrawBitmapString("TILT DOWN", rect_a_down_string_x, rect_a_down_string_y);
 
     //quando è attivo il pcl
     if(b_draw_pcl_options){
 
-        //rect clear color
-        rect_clear_color_x= rect_exit_x;
-        rect_clear_color_y= rect_a_up_y + rect_h + 10;
-        rect_clear_color_string_x= rect_clear_color_x + 15;
-        rect_clear_color_string_y= rect_clear_color_y + 20;
-        if(b_clear_color_over) ofSetColor(rect_color_over); else ofSetColor(rect_color);
-        ofRect(rect_clear_color_x, rect_clear_color_y, rect_w, rect_h);
-        ofDrawBitmapString("COLORS", rect_clear_color_string_x, rect_clear_color_string_y);
-
         //rect step up
-        rect_step_up_x= rect_clear_color_x;
-        rect_step_up_y= rect_clear_color_y + rect_h + 10;
+        rect_step_up_x= rect_exit_x;
+        rect_step_up_y= rect_a_up_y + rect_h + 10;
         rect_step_up_string_x= rect_step_up_x + 15;
         rect_step_up_string_y= rect_step_up_y + 20;
         if(b_step_up_color_over) ofSetColor(rect_color_over); else ofSetColor(rect_color);
@@ -281,7 +313,7 @@ void testApp::drawRectangleMenu(){
         rect_psize_up_string_y= rect_psize_up_y + 20;
         if(b_point_size_up_color_over) ofSetColor(rect_color_over); else ofSetColor(rect_color);
         ofRect(rect_psize_up_x, rect_psize_up_y, rect_w, rect_h);
-        ofDrawBitmapString("Point UP", rect_psize_up_string_x, rect_psize_up_string_y);
+        ofDrawBitmapString("POINT UP", rect_psize_up_string_x, rect_psize_up_string_y);
 
         //rect point size down
         rect_psize_down_x= rect_step_down_x;
@@ -290,16 +322,79 @@ void testApp::drawRectangleMenu(){
         rect_psize_down_string_y= rect_psize_down_y + 20;
         if(b_point_size_down_color_over) ofSetColor(rect_color_over); else ofSetColor(rect_color);
         ofRect(rect_psize_down_x, rect_psize_down_y, rect_w, rect_h);
-        ofDrawBitmapString("Point DOWN", rect_psize_down_string_x, rect_psize_down_string_y);
+        ofDrawBitmapString("POINT DOWN", rect_psize_down_string_x, rect_psize_down_string_y);
 
         //recognition
         rect_recognition_x= rect_psize_up_x;
         rect_recognition_y= rect_psize_up_y + rect_h + 10;
-        rect_recognition_string_x= rect_recognition_x + 15;
+        rect_recognition_string_x= rect_recognition_x + 5;
         rect_recognition_string_y= rect_recognition_y + 20;
         if(b_recognition_color_over) ofSetColor(rect_color_over); else ofSetColor(rect_color);
         ofRect(rect_recognition_x, rect_recognition_y, rect_w, rect_h);
         ofDrawBitmapString("RECOGNITION", rect_recognition_string_x, rect_recognition_string_y);
+
+        //rect clear color
+        rect_clear_color_x= rect_step_down_x;
+        rect_clear_color_y= rect_recognition_y;
+        rect_clear_color_string_x= rect_clear_color_x + 2;
+        rect_clear_color_string_y= rect_clear_color_y + 20;
+        if(b_clear_color_over) ofSetColor(rect_color_over); else ofSetColor(rect_color);
+        ofRect(rect_clear_color_x, rect_clear_color_y, rect_w, rect_h);
+        ofDrawBitmapString("CLEAR COLORS", rect_clear_color_string_x, rect_clear_color_string_y);
+
+        //first_min
+        rect_first_min_x= rect_recognition_x;
+        rect_first_min_y= rect_recognition_y + rect_h + 10;
+        rect_first_min_string_x= rect_first_min_x + 10;
+        rect_first_min_string_y= rect_first_min_y + 20;
+        if(b_first_min_color_over) ofSetColor(rect_first_min_color_over); else ofSetColor(rect_color);
+        ofRect(rect_first_min_x, rect_first_min_y, rect_w, rect_h);
+        ofDrawBitmapString("FIRST MIN", rect_first_min_string_x, rect_first_min_string_y);
+
+        //second_min
+        rect_second_min_x= rect_psize_down_x;
+        rect_second_min_y= rect_first_min_y;
+        rect_second_min_string_x= rect_second_min_x + 10;
+        rect_second_min_string_y= rect_second_min_y + 20;
+        if(b_second_min_color_over) ofSetColor(rect_second_min_color_over); else ofSetColor(rect_color);
+        ofRect(rect_second_min_x, rect_second_min_y, rect_w, rect_h);
+        ofDrawBitmapString("SECOND MIN", rect_second_min_string_x, rect_second_min_string_y);
+
+        //imposto i colori per le arrow
+        if(b_arrow_color_first_min || b_first_min_color_over) ofSetColor(rect_first_min_color_over);
+        if(b_arrow_color_second_min || b_second_min_color_over) ofSetColor(rect_second_min_color_over);
+
+        //arrow up
+        rect_arrow_up_x= 65;
+        rect_arrow_up_y= rect_first_min_y + rect_h + 20;
+        rect_arrow_up_string_x= rect_arrow_up_x + 15;
+        rect_arrow_up_string_y= rect_arrow_up_y + 20;
+        ofRect(rect_arrow_up_x, rect_arrow_up_y, rect_w, rect_h);
+        ofDrawBitmapString("UP", rect_arrow_up_string_x, rect_arrow_up_string_y);
+
+        //arrow left
+        rect_arrow_left_x= 15;
+        rect_arrow_left_y= rect_arrow_up_y + rect_h + 10;
+        rect_arrow_left_string_x= rect_arrow_left_x + 15;
+        rect_arrow_left_string_y= rect_arrow_left_y + 20;
+        ofRect(rect_arrow_left_x, rect_arrow_left_y, rect_w, rect_h);
+        ofDrawBitmapString("RIGHT", rect_arrow_left_string_x, rect_arrow_left_string_y);
+
+        //arrow right
+        rect_arrow_right_x= rect_arrow_left_x + rect_w + 10;
+        rect_arrow_right_y= rect_arrow_left_y;
+        rect_arrow_right_string_x= rect_arrow_right_x + 15;
+        rect_arrow_right_string_y= rect_arrow_right_y + 20;
+        ofRect(rect_arrow_right_x, rect_arrow_right_y, rect_w, rect_h);
+        ofDrawBitmapString("LEFT", rect_arrow_right_string_x, rect_arrow_right_string_y);
+
+        //arrow down
+        rect_arrow_down_x= rect_arrow_up_x;
+        rect_arrow_down_y= rect_arrow_left_y + rect_h + 10;
+        rect_arrow_down_string_x= rect_arrow_down_x + 15;
+        rect_arrow_down_string_y= rect_arrow_down_y + 20;
+        ofRect(rect_arrow_down_x, rect_arrow_down_y, rect_w, rect_h);
+        ofDrawBitmapString("DOWN", rect_arrow_down_string_x, rect_arrow_down_string_y);
     }
 
 }
@@ -342,6 +437,7 @@ void testApp::drawPointCloud() {
 
 	int n = mesh.getNumVertices();
 
+    //sono da settare al momento per ora vanno lasciate statiche
 	int far_distance= 1000;
 	float nearestDistance = 500;//50 cm
 
@@ -388,15 +484,14 @@ void testApp::drawPointCloud() {
 
     easyCam.setDistance(distance_cam);
 
-	//i puunti sono proiettati sottosopra e al contrario
-	ofScale(1, -1, -1);
+	//i punti sono proiettati sottosopra e al contrario
+	ofScale(-1, -1, -1);
 	ofTranslate(0, 0, translateZ);
 	glEnable(GL_DEPTH_TEST);
     //
 
 	if(b_clear_colors){
         mesh.clearColors();
-        //mesh_restricted.clearColors();
         ofSetColor(ofColor::black);
 	}
 
@@ -412,6 +507,25 @@ void testApp::drawPointCloud() {
     ofSetColor(0,0,255);
     ofFill();
     ofSphere(min_vertex, 5);
+
+    ofNoFill();
+    ofSetLineWidth(5);
+    //disegno il first_min
+    ofSetColor(ofColor::yellow);
+    first_min.set(first_min_x, first_min_y, first_min_z);
+    ofCircle(first_min, 8);
+
+
+    //disegno il second_min
+    ofSetColor(ofColor::green);
+    second_min.set(second_min_x, second_min_y, second_min_z);
+    ofCircle(second_min, 8);
+
+    //disegno una retta da first_min a second_min
+    ofSetColor(ofColor::red);
+    ofLine(first_min, second_min);
+    ofSetLineWidth(1);
+
 
     easyCam.end();
 
@@ -597,7 +711,7 @@ void testApp::mouseMoved(int x, int y){
         b_exit_press_enable= false;
     }
 
-    //ancgle up
+    //tilt up
     if(x >= rect_a_up_x && x <= rect_a_up_x+rect_w && y >= rect_a_up_y && y <= rect_a_up_y + rect_h){
 
         b_a_up_color_over= true;
@@ -609,7 +723,7 @@ void testApp::mouseMoved(int x, int y){
         b_a_up_press_enable= false;
     }
 
-    //angle down
+    //tilt down
     if(x >= rect_a_down_x && x <= rect_a_down_x+rect_w && y >= rect_a_down_y && y <= rect_a_down_y + rect_h){
 
         b_a_down_color_over= true;
@@ -705,6 +819,70 @@ void testApp::mouseMoved(int x, int y){
         b_recognition_press_enable= false;
     }
 
+    //first_min
+    if(x >= rect_first_min_x && x <= rect_first_min_x+rect_w && y >= rect_first_min_y && y <= rect_first_min_y + rect_h){
+
+        b_first_min_color_over= true;
+        b_first_min_press_enable= true;
+    }
+    else if(!(x >= rect_first_min_x && x <= rect_first_min_x+rect_w && y >= rect_first_min_y && y <= rect_first_min_y + rect_h)){
+
+        b_first_min_color_over= false;
+        b_first_min_press_enable= false;
+    }
+
+    //second_min
+    if(x >= rect_second_min_x && x <= rect_second_min_x+rect_w && y >= rect_second_min_y && y <= rect_second_min_y + rect_h){
+
+        b_second_min_color_over= true;
+        b_second_min_press_enable= true;
+    }
+    else if(!(x >= rect_second_min_x && x <= rect_second_min_x+rect_w && y >= rect_second_min_y && y <= rect_second_min_y + rect_h)){
+
+        b_second_min_color_over= false;
+        b_second_min_press_enable= false;
+    }
+
+    //arrow up
+    if(x >= rect_arrow_up_x && x <= rect_arrow_up_x+rect_w && y >= rect_arrow_up_y && y <= rect_arrow_up_y + rect_h){
+
+        b_arrow_up_press_enable= true;
+    }
+    else if(!(x >= rect_arrow_up_x && x <= rect_arrow_up_x+rect_w && y >= rect_arrow_up_y && y <= rect_arrow_up_y + rect_h)){
+
+        b_arrow_up_press_enable= false;
+    }
+
+    //arrow down
+    if(x >= rect_arrow_down_x && x <= rect_arrow_down_x+rect_w && y >= rect_arrow_down_y && y <= rect_arrow_down_y + rect_h){
+
+        b_arrow_down_press_enable= true;
+    }
+    else if(!(x >= rect_arrow_down_x && x <= rect_arrow_down_x+rect_w && y >= rect_arrow_down_y && y <= rect_arrow_down_y + rect_h)){
+
+        b_arrow_down_press_enable= false;
+    }
+
+    //arrow left
+    if(x >= rect_arrow_left_x && x <= rect_arrow_left_x+rect_w && y >= rect_arrow_left_y && y <= rect_arrow_left_y + rect_h){
+
+        b_arrow_left_press_enable= true;
+    }
+    else if(!(x >= rect_arrow_left_x && x <= rect_arrow_left_x+rect_w && y >= rect_arrow_left_y && y <= rect_arrow_left_y + rect_h)){
+
+        b_arrow_left_press_enable= false;
+    }
+
+    //arrow right
+    if(x >= rect_arrow_right_x && x <= rect_arrow_right_x+rect_w && y >= rect_arrow_right_y && y <= rect_arrow_right_y + rect_h){
+
+        b_arrow_right_press_enable= true;
+    }
+    else if(!(x >= rect_arrow_right_x && x <= rect_arrow_right_x+rect_w && y >= rect_arrow_right_y && y <= rect_arrow_right_y + rect_h)){
+
+        b_arrow_right_press_enable= false;
+    }
+
 }
 
 void testApp::mouseDragged(int x, int y, int button){
@@ -747,13 +925,11 @@ void testApp::mousePressed(int x, int y, int button){
     else if(b_step_up_press_enable){
         step++;
         if(step > 30) step= 30;
-        if(point_size > 15) point_size= 15;
     }
     //step down
     else if(b_step_down_press_enable){
         step--;
-        if(step < 2) step= 2;
-        if(point_size < 2) point_size= 2;
+        if(step < 1) step= 1;
     }
     //point size up
     else if(b_point_size_up_press_enable){
@@ -763,12 +939,60 @@ void testApp::mousePressed(int x, int y, int button){
     //point size down
     else if(b_point_size_down_press_enable){
         point_size--;
-        if(point_size < 2) point_size= 2;
+        if(point_size < 1) point_size= 1;
     }
     //recognition
     else if(b_recognition_press_enable){
         b_stop_update= !b_stop_update;
     }
+    //first min
+    else if(b_first_min_press_enable){
+        b_arrow_color_second_min= false;
+        b_arrow_color_first_min= true;
+
+        b_move_second_min= false;
+        b_move_first_min= true;
+    }
+    //second min
+    else if(b_second_min_press_enable){
+        b_arrow_color_first_min= false;
+        b_arrow_color_second_min= true;
+
+        b_move_first_min= false;
+        b_move_second_min= true;
+    }
+    //arrow
+    else if(b_move_first_min){
+
+        if(b_arrow_up_press_enable){
+
+        }
+        else if(b_arrow_down_press_enable){
+
+        }
+        else if(b_arrow_left_press_enable){
+
+        }
+        else if(b_arrow_right_press_enable){
+
+        }
+    }
+    else if(b_move_second_min){
+
+        if(b_arrow_up_press_enable){
+
+        }
+        else if(b_arrow_down_press_enable){
+
+        }
+        else if(b_arrow_left_press_enable){
+
+        }
+        else if(b_arrow_right_press_enable){
+
+        }
+    }
+
 }
 
 //--------------------------------------------------------------

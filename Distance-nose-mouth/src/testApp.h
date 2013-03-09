@@ -10,6 +10,8 @@
 class testApp : public ofBaseApp {
 public:
 
+    //==========================================================================================================
+    //FUNZIONI
 	void setup();
 	void update();
 	void draw();
@@ -30,7 +32,10 @@ public:
 	void drawRectangleMenu();
 	void drawInfo();
 	//
+    //==========================================================================================================
 
+    //==========================================================================================================
+    //VARIABILI
 	ofxKinect kinect;
 
 	ofxCvColorImage colorImg;
@@ -55,11 +60,12 @@ public:
 
 	int step= 3, point_size= 3, nearest_index= -1, translateZ= -600;
 
-	float distance_cam= 600;
+	float distance_cam= 350;
 
     ofVec3f min_vertex, first_min, second_min;
-
-    int vertex_circle_x= 0, vertex_circle_y= 0, vertex_circle_z= 0;
+    int first_min_x= 0, first_min_y= -100, first_min_z= 600;
+    int second_min_x= 0, second_min_y= 100, second_min_z= 600;
+    bool b_move_first_min, b_move_second_min;
 
     ofMesh mesh;
 
@@ -71,36 +77,45 @@ public:
 
 	// used for viewing the point cloud
 	ofEasyCam easyCam;
+    //==========================================================================================================
 
     //==========================================================================================================
-	//INTERFACCIA: pulsanti e info
+	//GUI: pulsanti e info
 	ofColor big_rect_color_o= ofColor::gray,
             big_rect_color_v= ofColor::white,
             rect_color= ofColor::white,
             rect_color_over= ofColor::blue,
             rect_label_color= ofColor::white,
-            rect_pcl_color;
-
+            rect_first_min_color_over= ofColor::yellow,
+            rect_second_min_color_over= ofColor::green;
+    //pulsanti-----------------------------------------------------------
 	bool b_pcl_color_over, b_pcl_press_enable,
 
          b_exit_color_over, b_exit_press_enable,
 
          b_a_up_color_over, b_a_up_press_enable,
-
          b_a_down_color_over, b_a_down_press_enable,
 
          b_clear_color_over, b_clear_colol_press_enable,
 
          b_step_up_color_over, b_step_up_press_enable,
-
          b_step_down_color_over, b_step_down_press_enable,
 
          b_point_size_up_color_over, b_point_size_up_press_enable,
-
          b_point_size_down_color_over, b_point_size_down_press_enable,
 
-         b_recognition_color_over, b_recognition_press_enable;
+         b_recognition_color_over, b_recognition_press_enable,
 
+         b_first_min_color_over, b_first_min_press_enable,
+         b_second_min_color_over, b_second_min_press_enable,
+
+         b_arrow_up_color_over, b_arrow_up_press_enable,
+         b_arrow_down_color_over, b_arrow_down_press_enable,
+         b_arrow_right_color_over, b_arrow_right_press_enable,
+         b_arrow_left_color_over, b_arrow_left_press_enable,
+         b_arrow_in_color_over, b_arrow_in_press_enable,
+         b_arrow_out_color_over, b_arrow_out_press_enable;
+    //-------------------------------------------------------------------
     bool b_stop_update;
 
     bool b_clear_colors;
@@ -108,6 +123,8 @@ public:
     bool b_draw_pcl_options;
 
     bool b_enable_distance_recognition;
+
+    bool b_arrow_color_first_min, b_arrow_color_second_min;
 
     //big_rect orizontal
 	float big_rect_o_x= 0,
@@ -119,11 +136,14 @@ public:
           big_rect_v_y= 5,
           big_rect_v_w= 250,
           big_rect_v_h= 300;
-    //big_rect_vertical_buttons
-    float big_rect_v_b_x= big_rect_v_x,
-          big_rect_v_b_y= big_rect_v_y + big_rect_v_h + 10,
+    //big_rect_vertical_buttons left
+    float big_rect_v_b_l_x= big_rect_v_x,
+          big_rect_v_b_l_y= big_rect_v_y + big_rect_v_h + 10,
           big_rect_v_b_w= 250,
           big_rect_v_b_h= 400;
+    //big_rect_vertical_buttons right
+    float big_rect_v_b_r_x=  ofGetWindowWidth() - 250 - 5,
+          big_rect_v_b_r_y= big_rect_v_y + big_rect_v_h + 10;
     //rect generici
 	float rect_w= 100, rect_h= 30;
     //rect pcl
@@ -146,6 +166,22 @@ public:
     float rect_psize_down_x, rect_psize_down_y, rect_psize_down_string_x, rect_psize_down_string_y;
     //distance recognition
     float rect_recognition_x, rect_recognition_y, rect_recognition_string_x, rect_recognition_string_y;
+    //rect first_min
+    float rect_first_min_x, rect_first_min_y, rect_first_min_string_x, rect_first_min_string_y;
+    //rect second_min
+    float rect_second_min_x, rect_second_min_y, rect_second_min_string_x, rect_second_min_string_y;
+    //rect arrow up
+    float rect_arrow_up_x, rect_arrow_up_y, rect_arrow_up_string_x, rect_arrow_up_string_y;
+    //rect arrow down
+    float rect_arrow_down_x, rect_arrow_down_y, rect_arrow_down_string_x, rect_arrow_down_string_y;
+    //rect arrow left
+    float rect_arrow_left_x, rect_arrow_left_y, rect_arrow_left_string_x, rect_arrow_left_string_y;
+    //rect arrow right
+    float rect_arrow_right_x, rect_arrow_right_y, rect_arrow_right_string_x, rect_arrow_right_string_y;
+    //rect arrow in
+    float rect_arrow_in_x, rect_arrow_in_y, rect_arrow_in_string_x, rect_arrow_in_string_y;
+    //rect arrow out
+    float rect_arrow_out_x, rect_arrow_out_y, rect_arrow_out_string_x, rect_arrow_out_string_y;
     //==========================================================================================================
 
 };
