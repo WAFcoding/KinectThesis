@@ -26,8 +26,6 @@ public:
 	void windowResized(int w, int h);
 
 	//
-	void findClosestPoint(int* min_x, int* min_Y);
-	void drawClosestPoint();
 	void mouseMoved(int x, int y);
 	void drawRectangleMenu();
 	void drawInfo();
@@ -36,7 +34,10 @@ public:
 
     //==========================================================================================================
     //VARIABILI
+
+    //kinect
 	ofxKinect kinect;
+	int w=0, h=0;
 
 	ofxCvColorImage colorImg;
 
@@ -55,28 +56,36 @@ public:
 
 	int nearThreshold;
 	int farThreshold;
-
+    //l'angolo di tilt
 	int angle;
-
-	int step= 3, point_size= 3, nearest_index= -1, translateZ= -600;
-
-	float distance_cam= 350;
-
-    ofVec3f min_vertex, first_min, second_min;
-    int first_min_x= 0, first_min_y= -100, first_min_z= 600;
-    int second_min_x= 0, second_min_y= 100, second_min_z= 600;
-    bool b_move_first_min, b_move_second_min;
-
+    //la struttura che contiene tutti i vertici del pcl
     ofMesh mesh;
-
     int mesh_point= 0, mesh_restricted_point= 0;
+    //passo di campionamento, dimensione dei punti, traslazione sull'asse z
+	int step= 3, point_size= 3, translateZ= -600;
+    //min
+    ofVec3f min_vertex;
+    int min_index= -1;
+    //first min
+    ofVec3f first_min;
+    int first_min_x= 0, first_min_y= -100, first_min_z= 600;
+    int first_index= 0;
+    bool b_move_first_min;
+    //second min
+    ofVec3f second_min;
+    int second_min_x= 0, second_min_y= 100, second_min_z= 600;
+    int second_index= 0;
+    bool b_move_second_min;
+    //la distanza tra first_min e second_min
+    float distance= 0;
+	//l'oggetto che consente la visualizzazione della mesh
+	ofEasyCam easyCam;
+	float distance_cam= 350;
 
 	ofEasyCam cam;
 
 	ofVec3f last_vertex;
 
-	// used for viewing the point cloud
-	ofEasyCam easyCam;
     //==========================================================================================================
 
     //==========================================================================================================
@@ -87,7 +96,8 @@ public:
             rect_color_over= ofColor::blue,
             rect_label_color= ofColor::white,
             rect_first_min_color_over= ofColor::yellow,
-            rect_second_min_color_over= ofColor::green;
+            rect_second_min_color_over= ofColor::green,
+            rect_fill_color= ofColor::gray;
     //pulsanti-----------------------------------------------------------
 	bool b_pcl_color_over, b_pcl_press_enable,
 
@@ -138,14 +148,29 @@ public:
           big_rect_v_h= 300;
     //big_rect_vertical_buttons left
     float big_rect_v_b_l_x= big_rect_v_x,
-          big_rect_v_b_l_y= big_rect_v_y + big_rect_v_h + 10,
+          big_rect_v_b_l_y= big_rect_v_y + big_rect_v_h + 5,
           big_rect_v_b_w= 250,
-          big_rect_v_b_h= 400;
+          big_rect_v_b_h= ofGetViewportHeight() - 5 - big_rect_v_h - 5 - 10;
+    //big_rect_vertical_buttons_left_fill
+    float big_rect_v_b_l_f_x= big_rect_v_b_l_x + 1,
+          big_rect_v_b_l_f_y= big_rect_v_b_l_y + 1,
+          big_rect_v_b_l_f_w= big_rect_v_b_w - 1,
+          big_rect_v_b_l_f_h= big_rect_v_b_h - 1;
     //big_rect_vertical_buttons right
-    float big_rect_v_b_r_x=  ofGetWindowWidth() - 250 - 5,
-          big_rect_v_b_r_y= big_rect_v_y + big_rect_v_h + 10;
+    float big_rect_v_b_r_x= ofGetViewportWidth() - 250 - 5,
+          big_rect_v_b_r_y= big_rect_v_b_l_y;
+    //big_rect_vertical_buttons_right_fill
+    float big_rect_v_b_r_f_x= big_rect_v_b_r_x + 1,
+          big_rect_v_b_r_f_y= big_rect_v_b_r_y + 1;
+    //big_rect_easycam
+    float big_rect_easycam_x= big_rect_v_x + big_rect_v_w + 5,
+          big_rect_easycam_y= 5,
+          big_rect_easycam_w= big_rect_v_b_r_x - 5 - big_rect_v_b_w - 5,
+          big_rect_easycam_h= ofGetViewportHeight() - 5 - 5;
     //rect generici
 	float rect_w= 100, rect_h= 30;
+	//rect delle freccie
+	float rect_arrow_w= 50, rect_arrow_h= 30;
     //rect pcl
     float rect_pcl_x, rect_pcl_y, rect_pcl_string_x, rect_pcl_string_y;
     //rect exit
